@@ -30,16 +30,16 @@ def type_is(value: str|list):
 
 def is_assigned(to:str = ""):
     '''
-    Filter issues by their assignee.
+    Filter issues by their assignee_id.
     If 'to' is provided, check if the issue's assignee matches 'to'. If 'to' is not provided, check if the issue has any assignee.
     
     :param to: Description
     :type to: str
     '''
     if to:
-        return lambda issue: issue['assignee'] == to
+        return lambda issue: issue['assignee_id'] == to
     else:
-        return lambda issue: bool(issue.get('assignee')) 
+        return lambda issue: bool(issue.get('assignee_id')) 
 
 def created_before(date):
     '''
