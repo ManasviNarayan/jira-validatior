@@ -61,4 +61,24 @@ def created_after(date):
     '''
     return lambda issue: issue['created'] > date
 
+def is_null(field):
+    '''
+    Filter issues by checking if a specific field is null.
+
+    :param field: Description
+    :type field: str
+    '''
+    return lambda issue: bool(issue.get(field))
+
+def and_(*filters):
+    return lambda issue: all(f(issue) for f in filters)
+
+def or_(*filters):
+    return lambda issue: any(f(issue) for f in filters)
+
+def not_(filter_func):
+    return lambda issue: not filter_func(issue)
+
+def always(issue):
+    return True
 
