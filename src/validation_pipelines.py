@@ -10,6 +10,25 @@ from src.validations import (
 )
 from datetime import datetime
 
+def run_pipeline(pipeline):
+    """
+    Runs a pipeline of (filter, [validators]) pairs on an issue.
+    Each filter is a function that takes an issue and returns True/False.
+    Each validator is a function that takes an issue and returns None or an error message.
+    Returns a list of error messages (if any).
+    """
+    def runner(issue):
+        errors = []
+        for filter_func, validators in pipeline:
+            if filter_func(issue):
+                for validator in validators:
+                    result = validator(issue)
+                    if result is not None:
+                        errors.append(result)
+        return errors
+    return runner
+
+
 # 1. Check that assignee_id is not empty for issues of type "Story" or "Bug".
 pipeline_assignee_for_story_or_bug = [
     (type_is(['Story', 'Bug']), [assignee_not_empty])

@@ -1,3 +1,5 @@
+import pandas as pd
+
 def status_is(value: str|list):
     '''
     Filter issues by their status.
@@ -39,7 +41,7 @@ def is_assigned(to:str = ""):
     if to:
         return lambda issue: issue['assignee_id'] == to
     else:
-        return lambda issue: bool(issue.get('assignee_id')) 
+        return lambda issue: pd.notna(issue['assignee_id']) and issue['assignee_id'].strip() != ''
 
 def created_before(date):
     '''
@@ -68,7 +70,7 @@ def is_null(field):
     :param field: Description
     :type field: str
     '''
-    return lambda issue: bool(issue.get(field))
+    return lambda issue: pd.isna(issue[field])
 
 def and_(*filters):
     return lambda issue: all(f(issue) for f in filters)
