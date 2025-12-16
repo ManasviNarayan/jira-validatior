@@ -1,7 +1,10 @@
-
+from src.logger import log_row_call, get_logger
 from datetime import datetime
 import pandas as pd
 
+logger = get_logger()
+
+@log_row_call
 def assignee_not_empty(issue):
     '''
     Validate that the assignee_id is a non-empty string.
@@ -11,6 +14,7 @@ def assignee_not_empty(issue):
         return "Assignee must be a non-empty string."
     return None
 
+@log_row_call
 def resolved_date_not_null(issue):
     '''
     Validate that the resolved date is not null.
@@ -20,6 +24,7 @@ def resolved_date_not_null(issue):
         return "Resolved date must not be null."
     return None
 
+@log_row_call
 def priority_not_null(issue):
     '''
     Validate that the priority is not null.
@@ -29,6 +34,7 @@ def priority_not_null(issue):
         return "Priority must not be null."
     return None
 
+@log_row_call
 def updated_after_created(issue):
     '''
     Validate that the updated date is after the created date.
@@ -41,6 +47,7 @@ def updated_after_created(issue):
         return "Updated date must be after created date."
     return None
 
+@log_row_call
 def status_is_valid(issue, 
                     valid_statuses= {'Open', 'In Progress', 'Resolved', 'Closed'}):
     '''
@@ -51,6 +58,7 @@ def status_is_valid(issue,
         return f"Status '{status}' is not valid. Must be one of {valid_statuses}."
     return None
 
+@log_row_call
 def within_SLA(issue, sla_days=7):
     '''
     Validate that the issue was resolved within the SLA days.

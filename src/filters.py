@@ -1,86 +1,73 @@
 import pandas as pd
+from src.logger import log_filter_call
 
 def status_is(value: str|list):
-    '''
-    Filter issues by their status.
-    Check if the issue's status matches the given value or is in the given list of values.
-    
-    :param value: Description
-    :type value: str | list
-    '''
-    return lambda issue: issue['status'] == value if isinstance(value, str) else issue['status'] in value
+    @log_filter_call(f"status_is({value})")
+    def _filter(issue):
+        return issue['status'] == value if isinstance(value, str) else issue['status'] in value
+    return _filter
 
 def priority_is(value: str|list):
-    '''
-    Filter issues by their priority.
-    Check if the issue's priority matches the given value or is in the given list of values.
-
-    :param value: Description
-    :type value: str | list
-    '''
-    return lambda issue: issue['priority'] == value if isinstance(value, str) else issue['priority'] in value
+    @log_filter_call(f"priority_is({value})")
+    def _filter(issue):
+        return issue['priority'] == value if isinstance(value, str) else issue['priority'] in value
+    return _filter
 
 def type_is(value: str|list):
-    '''
-    Filter issues by their type.
-    Check if the issue's type matches the given value or is in the given list of values.
-
-    :param value: Description
-    :type value: str | list
-    '''
-    return lambda issue: issue['type'] == value if isinstance(value, str) else issue['type'] in value
+    @log_filter_call(f"type_is({value})")
+    def _filter(issue):
+        return issue['type'] == value if isinstance(value, str) else issue['type'] in value
+    return _filter
 
 def is_assigned(to:str = ""):
-    '''
-    Filter issues by their assignee_id.
-    If 'to' is provided, check if the issue's assignee matches 'to'. If 'to' is not provided, check if the issue has any assignee.
-    
-    :param to: Description
-    :type to: str
-    '''
     if to:
-        return lambda issue: issue['assignee_id'] == to
+        @log_filter_call(f"is_assigned(to = {to})")
+        def _filter(issue):
+            return issue['assignee_id'] == to
+        return _filter
     else:
-        return lambda issue: pd.notna(issue['assignee_id']) and issue['assignee_id'].strip() != ''
+        @log_filter_call("is_assigned(any)")
+        def _filter(issue):
+            return pd.notna(issue['assignee_id']) and issue['assignee_id'].strip() != ''
+        return _filter
 
 def created_before(date):
-    '''
-    Filter issues by their creation date.
-    Check if the issue was created before the given date.
-
-    :param date: Description
-    :type date: datetime
-    '''
-    return lambda issue: issue['created'] < date
+    @log_filter_call(f"created_before({date})")
+    def _filter(issue):
+        return issue['created'] < date
+    return _filter
 
 def created_after(date):
-    '''
-    Filter issues by their creation date.
-    Check if the issue was created after the given date.
-
-    :param date: Description
-    :type date: datetime
-    '''
-    return lambda issue: issue['created'] > date
+    @log_filter_call(f"created_after({date})")
+    def _filter(issue):
+        return issue['created'] > date
+    return _filter
 
 def is_null(field):
-    '''
-    Filter issues by checking if a specific field is null.
-
-    :param field: Description
-    :type field: str
-    '''
-    return lambda issue: pd.isna(issue[field])
+    @log_filter_call(f"is_null({field})")
+    def _filter(issue):
+        return bool(issue.get(field))
+    return _filter
 
 def and_(*filters):
-    return lambda issue: all(f(issue) for f in filters)
+    @log_filter_call("and_ filter")
+    def _filter(issue):
+        return all(f(issue) for f in filters)
+    return _filter
 
 def or_(*filters):
-    return lambda issue: any(f(issue) for f in filters)
+    @log_filter_call("or_ filter")
+    def _filter(issue):
+        return any(f(issue) for f in filters)
+    return _filter
 
 def not_(filter_func):
-    return lambda issue: not filter_func(issue)
+    @log_filter_call("not_ filter")
+    def _filter(issue):
+        return not filter_func(issue)
+    return _filter
 
+@log_filter_call("always filter")
 def always(issue):
     return True
 

@@ -8,7 +8,10 @@ from src.validations import (
     updated_after_created,
     status_is_valid,
 )
+from src.logger import get_logger
 from datetime import datetime
+
+logger = get_logger()
 
 def run_pipeline(pipeline):
     """
@@ -19,9 +22,11 @@ def run_pipeline(pipeline):
     """
     def runner(issue):
         errors = []
+        logger.info(f"Running pipeline on issue {issue.get('key', 'N/A')}")
         for filter_func, validators in pipeline:
             if filter_func(issue):
                 for validator in validators:
+                    logger.info(f"{issue.get('key', 'N/A')}: Running validator {validator.__name__}")
                     result = validator(issue)
                     if result is not None:
                         errors.append(result)
