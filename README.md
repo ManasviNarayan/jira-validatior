@@ -319,9 +319,6 @@ When contributing to this project:
 3. Update `config.json` for new configuration options
 4. Document new validations in this README
 
-## License
-
-[Specify your license here]
 
 ## Acknowledgments
 
