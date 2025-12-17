@@ -1,8 +1,10 @@
 from src.logger import log_row_call, get_logger
+from src.config import get_config
 from datetime import datetime
 import pandas as pd
 
 logger = get_logger()
+config = get_config()['validations']
 
 @log_row_call
 def assignee_not_empty(issue):
@@ -49,7 +51,7 @@ def updated_after_created(issue):
 
 @log_row_call
 def status_is_valid(issue, 
-                    valid_statuses= {'Open', 'In Progress', 'Resolved', 'Closed'}):
+                    valid_statuses= config['valid_statuses']):
     '''
     Validate that the issue's status is within the set of valid statuses.
     '''
@@ -59,7 +61,7 @@ def status_is_valid(issue,
     return None
 
 @log_row_call
-def within_SLA(issue, sla_days=7):
+def within_SLA(issue, sla_days=config['sla_days']):
     '''
     Validate that the issue was resolved within the SLA days.
     '''

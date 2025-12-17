@@ -8,10 +8,12 @@ from src.validations import (
     updated_after_created,
     status_is_valid,
 )
+from src.config import get_config
 from src.logger import get_logger
 from datetime import datetime
 
 logger = get_logger()
+config = get_config()['pipelines']
 
 def run_pipeline(pipeline):
     """
@@ -36,12 +38,12 @@ def run_pipeline(pipeline):
 
 # 1. Check that assignee_id is not empty for issues of type "Story" or "Bug".
 pipeline_assignee_for_story_or_bug = [
-    (type_is(['Story', 'Bug']), [assignee_not_empty])
+    (type_is(config['require_assignee_for_types']), [assignee_not_empty])
 ]
 
 # 2. Ensure "Resolved" or "Closed" issues have a non-null resolved_date.
 pipeline_resolved_closed_has_resolved_date = [
-    (status_is(['Resolved', 'Closed']), [resolved_date_not_null])
+    (status_is(config['require_resolved_date_for_statuses']), [resolved_date_not_null])
 ]
 
 # 3. Validate that "In Progress" issues have a non-null assignee_id.
@@ -55,13 +57,13 @@ pipeline_priority_not_null_except_epic = [
 ]
 
 # 5. Flag issues where created_date is after resolved_date.
-pipeline_created_before_resolved = [
+pipeline_updated_before_created = [
     (
         and_(
             not_(is_null('created')),
-            not_(is_null('resolved'))
+            not_(is_null('updated'))
         ),
-        [lambda issue: "Created date is after resolved date." if issue['created'] > issue['resolved'] else None]
+        [updated_after_created]
     )
 ]
 
@@ -77,6 +79,6 @@ all_pipelines = (
     pipeline_resolved_closed_has_resolved_date +
     pipeline_in_progress_has_assignee +
     pipeline_priority_not_null_except_epic +
-    pipeline_created_before_resolved +
+    pipeline_updated_before_created +
     pipeline_status_and_dates_are_valid
 )

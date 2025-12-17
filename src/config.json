@@ -1,0 +1,26 @@
+{
+    "jira": {
+        "filename": "jira_issues.csv",
+        "chunk_size": 1000
+    },
+    "validations": {
+        "valid_statuses": [
+            "To Do",
+            "In Progress",
+            "Resolved",
+            "Closed",
+            "Open"
+        ],
+        "sla_days": 7
+    },
+    "pipelines": {
+        "require_assignee_for_types": [
+            "Story",
+            "Bug"
+        ],
+        "require_resolved_date_for_statuses": [
+            "Resolved",
+            "Closed"
+        ]
+    }
+}
